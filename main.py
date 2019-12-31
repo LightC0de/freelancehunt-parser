@@ -1,7 +1,12 @@
-import requests
 import json
-from lxml import html, etree
+import logging
 from collections import namedtuple
+
+import requests
+from lxml import etree, html
+
+logging.basicConfig(level=logging.DEBUG,
+                    format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M')
 
 
 def get_with_cookies(url, json_file=None):
@@ -44,7 +49,8 @@ def get_list_projects(response):
 
 def main():
     namefile_json = 'data'
-    response = get_with_cookies('https://freelancehunt.com/projects?skills%5B%5D=124', namefile_json)
+    response = get_with_cookies(
+        'https://freelancehunt.com/projects?skills%5B%5D=124', namefile_json)
     projects = get_list_projects(response)
 
     for el in projects:
