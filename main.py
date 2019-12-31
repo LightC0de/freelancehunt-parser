@@ -3,7 +3,7 @@ import logging
 from collections import namedtuple
 
 import requests
-from lxml import etree, html
+from lxml import html
 
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M')
@@ -59,33 +59,40 @@ def get_list_projects(response):
     return projects
 
 
+def send_position(url, amount, comment):
+    try:
+        r = get_with_cookies(url)
+        data = {
+            '_qf__addbid': '',
+            'qf:token': xpath(r, '//*[@id="qf:token-0"]/@value')[0],
+            'amount': amount,
+            'currency_code': 'UAH',
+            'safe_type': 'split',
+            'days_to_deliver': '1',
+            'comment': comment,
+            'add': ''
+        }
+    except:
+        logging.error('Problem this project..')
+        data = {}
+    return post_with_cookies(url, data)
+
+
 def main():
     global NAME_FILE_JSON
     NAME_FILE_JSON = 'data.json'
+    for i in range(1, 20):
+        link = f'https://freelancehunt.com/projects?page={i}'
+        print('Page:', link)  # TODO: remove
+        r = get_with_cookies(link)
+        projects = get_list_projects(r)
 
-    r = get_with_cookies(
-        'https://freelancehunt.com/projects?skills%5B%5D=124')
-    projects = get_list_projects(r)
-
-    # Print all projects
-    # for el in projects:
-    #     r2 = get_with_cookies(el['link'])
-    #     title = xpath(r2, '//title')[0].text
-    #     print(title)
-
-    r = get_with_cookies('https://freelancehunt.com/project/sdelat-mnogostranichnyiy-sayt-bek-and/609184.html')
-    data = {
-        '_qf__addbid': '',
-        'qf:token': xpath(r, '//*[@id="qf:token-0"]/@value')[0],
-        'amount': '20000',
-        'currency_code': 'UAH',
-        'safe_type': 'split',
-        'days_to_deliver': '1',
-        'comment': 'Здравствуйте. Давайте обсудим в личных сообщениях все моменты) А в целом, сделаю в лучщем виде :)',
-        'add': ''
-    }
-    r2 = post_with_cookies(projects[0]['link'], data)
-    print(r2)
+        # Print all projects
+        for el in projects:
+            print('Link: ', el['link'])  # TODO: remove
+            r = send_position(el['link'], 2000,
+                              'Добрый вечер! С радостью выполню ваш заказ, имею огромный опыт веб разработки (4 года). Постоянно на связи - обращайтесь!')
+            print(r)
 
 
 if __name__ == "__main__":
