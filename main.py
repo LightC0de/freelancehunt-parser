@@ -12,6 +12,7 @@ logging.basicConfig(level=logging.INFO,
 def xpath(response, requests):
     return html.fromstring(response.text).xpath(requests)
 
+
 def get_with_cookies(url):
     json_file = open(NAME_FILE_JSON)
     json_str = json_file.read()
@@ -66,28 +67,25 @@ def main():
         'https://freelancehunt.com/projects?skills%5B%5D=124')
     projects = get_list_projects(r)
 
+    # Print all projects
     # for el in projects:
     #     r2 = get_with_cookies(el['link'])
-    #     tree = html.fromstring(r2.text)
-    #     title = tree.xpath('//title')[0].text
+    #     title = xpath(r2, '//title')[0].text
     #     print(title)
 
-    print(projects[0]['link'])
-    r = get_with_cookies(projects[0]['link'])
-
-    tree = html.fromstring(r.text)
+    r = get_with_cookies('https://freelancehunt.com/project/sdelat-mnogostranichnyiy-sayt-bek-and/609184.html')
     data = {
         '_qf__addbid': '',
-        'qf:token': tree.xpath('//*[@id="qf:token-0"]/@value')[0],
-        'amount': '1234',
+        'qf:token': xpath(r, '//*[@id="qf:token-0"]/@value')[0],
+        'amount': '20000',
         'currency_code': 'UAH',
         'safe_type': 'split',
         'days_to_deliver': '1',
         'comment': 'Здравствуйте. Давайте обсудим в личных сообщениях все моменты) А в целом, сделаю в лучщем виде :)',
         'add': ''
     }
-    # r2 = post_with_cookies(projects[0]['link'], data)
-    # print(r2.text)
+    r2 = post_with_cookies(projects[0]['link'], data)
+    print(r2)
 
 
 if __name__ == "__main__":
