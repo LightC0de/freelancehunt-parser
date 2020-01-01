@@ -40,13 +40,10 @@ def post_with_cookies(url, data):
 
 
 def get_list_projects(response):
-    names = []
-    for name in xpath(response, '//a[contains(concat(" ",normalize-space(@class)," ")," visitable ")]'):
-        names.append(name.text)
-
-    links = []
-    for link in xpath(response, '//a[contains(concat(" ",normalize-space(@class)," ")," visitable ")]/@href'):
-        links.append(link)
+    names = [name for name in xpath(
+        response, '//a[contains(concat(" ",normalize-space(@class)," ")," visitable ")]')]
+    links = [link for link in xpath(
+        response, '//a[contains(concat(" ",normalize-space(@class)," ")," visitable ")]/@href')]
 
     i = 0
     projects = []
@@ -56,6 +53,7 @@ def get_list_projects(response):
             'link': links[i],
         })
         i += 1
+
     return projects
 
 
