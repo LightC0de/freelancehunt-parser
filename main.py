@@ -40,20 +40,12 @@ def post_with_cookies(url, data):
 
 
 def get_list_projects(response):
-    names = [name for name in xpath(
+    names = [name.text for name in xpath(
         response, '//a[contains(concat(" ",normalize-space(@class)," ")," visitable ")]')]
     links = [link for link in xpath(
         response, '//a[contains(concat(" ",normalize-space(@class)," ")," visitable ")]/@href')]
 
-    i = 0
-    projects = []
-    while(i < len(names)):
-        projects.append({
-            'name': names[i],
-            'link': links[i],
-        })
-        i += 1
-
+    projects = list(zip(names, links))
     return projects
 
 
@@ -79,16 +71,15 @@ def send_position(url, amount, comment):
 def main():
     global NAME_FILE_JSON
     NAME_FILE_JSON = 'data.json'
-    for i in range(1, 20):
+    for i in range(1,2):
         link = f'https://freelancehunt.com/projects?page={i}'
         print('Page:', link)  # TODO: remove
         r = get_with_cookies(link)
         projects = get_list_projects(r)
 
-        # Print all projects
-        for el in projects:
-            print('Link: ', el['link'])  # TODO: remove
-            r = send_position(el['link'], 2000,
+        for (name, link) in projects:
+            print('Link: ', link)  # TODO: remove
+            r = send_position(link, 2000,
                               'Добрый вечер! С радостью выполню ваш заказ, имею огромный опыт веб разработки (4 года). Постоянно на связи - обращайтесь!')
             print(r)
 
